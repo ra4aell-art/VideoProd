@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FRAME LAB — видеопродакшн в Москве и МО</title>
+<meta name="description" content="Снимаем рекламу и клипы, которые приносят продажи и миллионы просмотров. Москва и МО.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  // wine — бордовый для кнопок и заливок, winel — светлый бордовый для текста и ховеров на тёмном фоне
+  colors: { ink: '#0a0a0a', card: '#141414', wine: '#8c1c32', winel: '#e0566f' },
+  fontFamily: { display: ['Syne', 'sans-serif'], sans: ['Inter', 'sans-serif'] }
+}}};
+</script>
+<style>
+  body { background:#0a0a0a; color:#f2f2f2; }
+  .glass { background:rgba(20,20,20,.6); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.08); }
+  .thumb img { transition:transform .6s cubic-bezier(.2,.7,.2,1); }
+  .thumb:hover img { transform:scale(1.07); }
+  .play { opacity:0; transform:scale(.8); transition:.35s; }
+  .thumb:hover .play, .thumb:focus-visible .play { opacity:1; transform:scale(1); }
+  .filter-btn.active { background:#8c1c32; color:#fff; border-color:#8c1c32; }
+  /* Лента портфолио: едет сама, листается колесом мыши, свайпом и перетаскиванием полосы */
+  .marquee { overflow-x:auto; overflow-y:hidden; scrollbar-width:none; -webkit-mask-image:linear-gradient(to right,transparent,#000 5%,#000 95%,transparent); mask-image:linear-gradient(to right,transparent,#000 5%,#000 95%,transparent); }
+  .marquee::-webkit-scrollbar { display:none; }
+  .track { display:flex; width:max-content; }
+  .qstep { display:none; } .qstep.on { display:block; animation:fadeUp .4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+  .opt { border:1px solid rgba(255,255,255,.1); background:#141414; transition:.25s; }
+  .opt:hover { border-color:#e0566f; transform:translateY(-2px); }
+  .opt.sel { border-color:#e0566f; background:rgba(140,28,50,.3); }
+  #cmp .cmp-before { clip-path:inset(0 calc(100% - var(--p)) 0 0); }
+  #fabMenu { opacity:0; transform:translateY(12px); pointer-events:none; transition:.3s; }
+  #fab.open #fabMenu { opacity:1; transform:none; pointer-events:auto; }
+  #fab.open .fab-ping, #fab.open .ic-open { display:none; } #fab:not(.open) .ic-close { display:none; }
+  .faq-a { display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease; }
+  .faq-item.open .faq-a { grid-template-rows:1fr; } .faq-item.open .faq-ic { transform:rotate(45deg); }
+  .spin { display:inline-block; width:1em; height:1em; border:2px solid currentColor; border-top-color:transparent; border-radius:50%; animation:spin .7s linear infinite; vertical-align:-.15em; margin-right:.5rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  /* Карточки услуг с фото */
+  .svc { position:relative; overflow:hidden; }
+  .svc > * { position:relative; }
+  .svc > .svc-bg { position:absolute; inset:0; }
+  :focus-visible { outline:2px solid #e0566f; outline-offset:3px; }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none!important; animation:none!important; scroll-behavior:auto!important; } }
+</style>
+</head>
+<body class="font-sans antialiased">
+
+<!-- ===== HEADER ===== -->
+<header class="fixed top-0 inset-x-0 z-40 glass">
+  <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="#top" class="font-display font-extrabold text-xl tracking-tight">FRAME<span class="text-winel">LAB</span></a>
+    <nav class="hidden md:flex gap-8 text-sm text-white/70">
+      <a href="#portfolio" class="hover:text-winel transition">Портфолио</a>
+      <a href="#services" class="hover:text-winel transition">Услуги</a>
+      <a href="#calc" class="hover:text-winel transition">Калькулятор</a>
+      <a href="#process" class="hover:text-winel transition">Этапы</a>
+      <a href="#contact" class="hover:text-winel transition">Контакты</a>
+    </nav>
+    <button type="button" data-lead class="bg-wine text-white text-sm font-semibold px-4 py-2 rounded-full hover:brightness-125 transition">Обсудить проект</button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="top" class="relative min-h-screen flex items-end overflow-hidden">
+  <!-- ЗДЕСЬ МЕНЯТЬ ССЫЛКУ НА ШОУРИЛ (фоновое видео, src ниже)
+       Для фона нужна прямая ссылка на .mp4, например: https://ваш-сайт.ru/video/showreel.mp4
+       (YouTube/Vimeo-страницы в <video> не работают). Лучше 10–20 сек, без звука, до 10 МБ.
+       Сейчас стоит временная заглушка. Ссылка для кнопки «Смотреть Showreel» — в секции Hero ниже. -->
+  <video class="absolute inset-0 w-full h-full object-cover" poster="https://images.unsplash.com/photo-1781127445118-8140677fdea1?auto=format&fit=crop&w=1400&q=70" autoplay muted loop playsinline
+         src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"></video>
+  <div class="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30"></div>
+  <div class="relative max-w-7xl mx-auto px-5 pb-20 pt-40 w-full">
+    <p class="text-white/70 mb-5 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-winel"></i> Москва и МО</p>
+    <h1 class="font-display font-extrabold leading-[0.95] text-5xl sm:text-7xl lg:text-8xl max-w-5xl">Снимаем рекламу и клипы, которые приносят продажи.</h1>
+    <p class="mt-6 max-w-xl text-lg text-white/70">И миллионы просмотров. Продакшн полного цикла: от идеи до финального монтажа, сдаём точно в дедлайн.</p>
+    <div class="mt-9 flex flex-wrap gap-3">
+      <!-- ЗДЕСЬ МЕНЯТЬ ССЫЛКУ НА ШОУРИЛ (кнопка ведёт на Vimeo, откроется в новой вкладке) -->
+      <a href="https://vimeo.com/showcase/12452953?fl=so&fe=fs" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 min-w-[250px] leading-none text-center bg-wine text-white font-semibold px-6 py-4 rounded-full hover:brightness-125 transition">
+        <i data-lucide="play" class="w-4 h-4"></i> Смотреть Showreel
+      </a>
+      <a href="#calc" class="glass inline-flex items-center justify-center min-w-[250px] leading-none text-center px-6 py-4 rounded-full font-semibold hover:border-winel hover:text-winel transition">Рассчитать стоимость</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ПОРТФОЛИО ===== -->
+<section id="portfolio" class="py-24 max-w-7xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Избранные проекты</h2>
+  <div id="filters" class="mt-8 flex flex-wrap gap-2"></div>
+  <div id="grid" class="marquee mt-10"></div>
+</section>
+
+<!-- ===== УСЛУГИ (Bento) ===== -->
+<section id="services" class="py-24 max-w-7xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Что мы делаем?</h2>
+  <p class="mt-4 text-white/60">Стоимость считаем под задачу.</p>
+  <div class="mt-10 grid gap-4 md:grid-cols-3 md:auto-rows-[220px]">
+    <!-- Фото карточки: меняйте ссылку в src -->
+    <div class="svc group md:col-span-2 md:row-span-2 bg-card rounded-3xl p-8 flex flex-col justify-between hover:ring-1 hover:ring-wine transition">
+      <div class="svc-bg"><img src="https://images.unsplash.com/photo-1781127445118-8140677fdea1?auto=format&fit=crop&w=1400&q=70" alt="Съёмка на площадке" loading="lazy" style="object-position:center 35%" class="w-full h-full object-cover opacity-55 transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/30"></div></div>
+            <i data-lucide="clapperboard" class="w-10 h-10 text-winel"></i>
+      <div>
+        <h3 class="font-display font-bold text-3xl">Съёмка под ключ</h3>
+        <p class="mt-3 text-white/60 max-w-md">Берём проект целиком: идея, сценарий, команда, съёмки, монтаж и сдача. Один продюсер ведёт вас на каждом этапе.</p>
+      </div>
+    </div>
+    <div class="svc group bg-card rounded-3xl p-7 flex flex-col justify-between hover:ring-1 hover:ring-wine transition">
+      <div class="svc-bg"><img src="https://images.unsplash.com/photo-1601643153424-d42265988ce8?auto=format&fit=crop&w=1000&q=70" alt="Съёмка промо-ролика" loading="lazy" style="object-position:center" class="w-full h-full object-cover opacity-55 transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/30"></div></div>
+            <i data-lucide="megaphone" class="w-8 h-8 text-winel"></i>
+      <div><h3 class="font-display font-bold text-xl">Промо-ролики для бизнеса</h3><p class="mt-2 text-sm text-white/60">Ролики, которые продают.</p></div>
+    </div>
+    <div class="svc group bg-card rounded-3xl p-7 flex flex-col justify-between hover:ring-1 hover:ring-wine transition">
+      <div class="svc-bg"><img src="https://images.unsplash.com/photo-1599751496621-b2b9770e2775?auto=format&fit=crop&w=1000&q=70" alt="Съёмка контента" loading="lazy" style="object-position:center" class="w-full h-full object-cover opacity-55 transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/30"></div></div>
+            <i data-lucide="smartphone" class="w-8 h-8 text-winel"></i>
+      <div><h3 class="font-display font-bold text-xl">Reels и YouTube-шоу</h3><p class="mt-2 text-sm text-white/60">Съёмка контента для соцсетей и каналов.</p></div>
+    </div>
+    <div class="svc group md:col-span-3 bg-card rounded-3xl p-7 flex items-center gap-6 hover:ring-1 hover:ring-wine transition">
+      <div class="svc-bg"><img src="https://images.unsplash.com/photo-1598801823890-60e5d434dbba?auto=format&fit=crop&w=1000&q=70" alt="Монтаж и цветокоррекция" loading="lazy" style="object-position:center 40%" class="w-full h-full object-cover opacity-55 transition duration-700 group-hover:scale-105"><div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/50 to-ink/30"></div></div>
+            <i data-lucide="palette" class="w-10 h-10 text-winel shrink-0"></i>
+      <div><h3 class="font-display font-bold text-xl">Монтаж и цветокоррекция</h3><p class="mt-1 text-sm text-white/60">Монтаж, звук, кинематографичный цвет и мастеринг под любой экран.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЦИФРЫ ===== -->
+<section class="py-16 border-y border-white/10">
+  <div class="max-w-7xl mx-auto px-5 grid grid-cols-1 sm:grid-cols-3 gap-10">
+    <div><div class="font-display font-extrabold text-6xl text-winel"><span data-count="40">0</span>+</div><p class="mt-2 text-white/60">проектов</p></div>
+    <div><div class="font-display font-extrabold text-6xl text-winel"><span data-count="3">0</span> года</div><p class="mt-2 text-white/60">в индустрии</p></div>
+    <div><div class="font-display font-extrabold text-4xl sm:text-5xl text-winel leading-tight">Точно в дедлайн</div><p class="mt-2 text-white/60">сдаём каждый проект</p></div>
+  </div>
+</section>
+
+<!-- ===== СЕТАП ===== -->
+<section id="setup" class="py-24 max-w-7xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">На чём мы снимаем</h2>
+  <div class="mt-10 grid gap-4 md:grid-cols-3">
+    <div class="bg-card rounded-3xl p-7 hover:ring-1 hover:ring-wine transition"><i data-lucide="camera" class="w-9 h-9 text-winel"></i><h3 class="mt-8 font-display font-bold text-xl">Камеры</h3><p class="mt-2 text-sm text-white/60">Кинематографичная картинка и работа в S-Log3.</p></div>
+    <div class="bg-card rounded-3xl p-7 hover:ring-1 hover:ring-wine transition"><i data-lucide="lightbulb" class="w-9 h-9 text-winel"></i><h3 class="mt-8 font-display font-bold text-xl">Свет</h3><p class="mt-2 text-sm text-white/60">Студийный и выездной свет под задачу кадра.</p></div>
+    <div class="bg-card rounded-3xl p-7 hover:ring-1 hover:ring-wine transition"><i data-lucide="mic" class="w-9 h-9 text-winel"></i><h3 class="mt-8 font-display font-bold text-xl">Звук и стабилизация</h3><p class="mt-1 text-white">Микрофоны, гимбалы</p><p class="mt-2 text-sm text-white/60">Чистый звук и плавная камера в движении.</p></div>
+  </div>
+</section>
+
+<!-- ===== ДО / ПОСЛЕ ===== -->
+<section id="grading" class="py-24 max-w-5xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Цветокоррекция: до и после</h2>
+  <p class="mt-4 text-white/60">Потяните ползунок и сравните исходный материал с готовой картинкой.</p>
+  <!-- ДО/ПОСЛЕ: замените src обоих <img> на свои кадры. Для «до» удалите style="filter:..." — это имитация лог-профиля. -->
+  <div id="cmp" tabindex="0" role="slider" aria-label="Сравнение до и после" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" class="relative mt-10 aspect-video rounded-3xl overflow-hidden select-none cursor-ew-resize" style="--p:50%;touch-action:pan-y">
+    <img src="https://images.unsplash.com/photo-1574717025179-0b6d03d4d86f?auto=format&fit=crop&w=1400&q=70" alt="После цветокоррекции" draggable="false" class="absolute inset-0 w-full h-full object-cover" style="filter:saturate(1.6) contrast(1.15)">
+    <img src="https://images.unsplash.com/photo-1574717025179-0b6d03d4d86f?auto=format&fit=crop&w=1400&q=70" alt="Исходный материал" draggable="false" class="cmp-before absolute inset-0 w-full h-full object-cover" style="filter:grayscale(.9) contrast(.65) brightness(1.15)">
+    <span class="absolute top-4 left-4 glass text-xs px-3 py-1.5 rounded-full">RAW / S-Log3</span>
+    <span class="absolute top-4 right-4 bg-wine text-xs px-3 py-1.5 rounded-full">Final Color Grading</span>
+    <div class="absolute inset-y-0 w-0.5 bg-white -translate-x-1/2 pointer-events-none" style="left:var(--p)">
+      <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-wine border-2 border-white grid place-items-center shadow-xl"><i data-lucide="chevrons-left-right" class="w-5 h-5"></i></span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ЭТАПЫ ===== -->
+<section id="process" class="py-24 max-w-7xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Как мы работаем</h2>
+  <ol class="mt-10 grid gap-4 md:grid-cols-4">
+    <li class="glass rounded-3xl p-6"><span class="font-display text-winel text-3xl font-bold">1</span><h3 class="mt-4 font-display font-bold text-xl">Бриф</h3><p class="mt-2 text-sm text-white/60">Обсуждаем задачу, аудиторию, бюджет и сроки.</p></li>
+    <li class="glass rounded-3xl p-6"><span class="font-display text-winel text-3xl font-bold">2</span><h3 class="mt-4 font-display font-bold text-xl">Сценарий</h3><p class="mt-2 text-sm text-white/60">Пишем сценарий и раскадровку, согласовываем с вами.</p></li>
+    <li class="glass rounded-3xl p-6"><span class="font-display text-winel text-3xl font-bold">3</span><h3 class="mt-4 font-display font-bold text-xl">Съёмки</h3><p class="mt-2 text-sm text-white/60">Команда, свет, камера, локации в Москве и МО.</p></li>
+    <li class="glass rounded-3xl p-6"><span class="font-display text-winel text-3xl font-bold">4</span><h3 class="mt-4 font-display font-bold text-xl">Монтаж и сдача</h3><p class="mt-2 text-sm text-white/60">Монтаж, цвет, звук. Сдаём точно в срок.</p></li>
+  </ol>
+</section>
+
+<!-- ===== КАЛЬКУЛЯТОР СТОИМОСТИ ===== -->
+<section id="calc" class="py-24 max-w-7xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Интерактивный калькулятор стоимости съёмки</h2>
+  <p class="mt-4 text-white/60 max-w-2xl">Соберите проект из карточек и сразу увидите предварительную смету. Цены стартовые.</p>
+  <div class="mt-10 grid gap-8 lg:grid-cols-[1fr_380px] items-start">
+    <div id="calcOptions" class="space-y-10">
+      <div><h3 class="font-display font-bold text-2xl mb-4">1. Формат видео</h3><div id="optFormats" class="grid gap-3 sm:grid-cols-2"></div></div>
+      <div><h3 class="font-display font-bold text-2xl mb-4">2. Длительность съёмки</h3><div id="optDurations" class="grid gap-3"></div></div>
+      <div><h3 class="font-display font-bold text-2xl mb-4">3. Что добавить к проекту?</h3><div id="optAddons" class="grid gap-3 sm:grid-cols-2"></div></div>
+    </div>
+    <aside class="glass rounded-3xl p-6 lg:sticky lg:top-24">
+      <h3 class="font-display font-bold text-2xl">Ваша смета</h3>
+      <p class="text-sm text-white/50">Предварительная смета</p>
+      <ul id="sumList" class="mt-5 space-y-2 text-sm"></ul>
+      <label class="mt-5 flex items-center gap-3 cursor-pointer">
+        <input id="newClient" type="checkbox" checked class="peer sr-only">
+        <span class="relative shrink-0 w-11 h-6 rounded-full bg-white/20 transition peer-checked:bg-wine peer-focus-visible:ring-2 peer-focus-visible:ring-winel after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition peer-checked:after:translate-x-5"></span>
+        <span id="discLabel" class="text-sm"></span>
+      </label>
+      <div id="sumPrice" class="mt-5 pt-5 border-t border-white/10"></div>
+      <p class="mt-3 text-xs text-white/40">*Точная стоимость фиксируется после краткого обсуждения вашей задачи. Аренда студий оплачивается отдельно.</p>
+      <form id="calcForm" class="mt-5 space-y-3">
+        <input required name="name" placeholder="Ваше имя" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3 focus:border-winel outline-none">
+        <input required name="contact" placeholder="Ваш контакт (Телефон / Telegram / WhatsApp)" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3 focus:border-winel outline-none">
+        <button id="calcBtn" class="w-full bg-wine text-white font-semibold py-3.5 rounded-xl hover:brightness-125 transition disabled:opacity-60"></button>
+        <div id="calcMsg" class="hidden"></div>
+      </form>
+    </aside>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq" class="py-24 max-w-3xl mx-auto px-5">
+  <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Частые вопросы</h2>
+  <div id="faqList" class="mt-10 border-t border-white/10"></div>
+</section>
+
+<!-- ===== КОНТАКТЫ ===== -->
+<footer id="contact" class="pt-24 pb-10 bg-card">
+  <div class="max-w-7xl mx-auto px-5 grid gap-12 lg:grid-cols-2">
+    <div>
+      <h2 class="font-display font-extrabold text-4xl sm:text-6xl">Расскажите о проекте</h2>
+      <p class="mt-5 text-white/60 max-w-md">Ответим в течение рабочего дня и посчитаем стоимость под вашу задачу. Работаем в Москве и МО.</p>
+      <div class="mt-8 space-y-3">
+        
+        <a href="mailto:Ra4aell@gmail.com" class="block hover:text-winel transition">Почта: Ra4aell@gmail.com</a>
+      </div>
+    </div>
+    <form id="leadForm" class="space-y-4">
+      <input required name="name" placeholder="Имя" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none">
+      <input required name="contact" placeholder="Телефон, email или Telegram" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none">
+      <select name="type" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none text-white/80">
+        <option>Реклама</option><option>Reels/Shorts</option><option>Музыкальный клип</option><option>Ивент</option><option>Другое</option>
+      </select>
+      <button class="w-full bg-wine text-white font-semibold py-3.5 rounded-xl hover:brightness-125 transition">Отправить заявку</button>
+      <p id="formMsg" class="text-winel text-sm hidden">Спасибо! Заявка отправлена, мы скоро свяжемся с вами.</p>
+    </form>
+  </div>
+  <p class="max-w-7xl mx-auto px-5 mt-16 text-sm text-white/40">© 2026 Frame Lab · Москва и МО. Все права защищены.</p>
+</footer>
+
+<!-- ===== ПЛАВАЮЩАЯ КНОПКА СВЯЗИ ===== -->
+<div id="fab" class="fixed right-5 z-30 flex flex-col items-end gap-3" style="bottom:calc(1.25rem + env(safe-area-inset-bottom))">
+  <div id="fabMenu" class="flex flex-col items-end gap-3">
+    <button type="button" data-lead class="glass flex items-center gap-2 px-5 py-3 rounded-full font-medium hover:text-winel transition"><i data-lucide="send" class="w-4 h-4"></i> Оставить заявку</button>
+    <a id="waLink" target="_blank" rel="noopener" href="#" hidden class="glass flex items-center gap-2 px-5 py-3 rounded-full font-medium hover:text-winel transition"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp</a>
+  </div>
+  <button id="fabBtn" aria-expanded="false" aria-label="Связаться с нами" class="relative w-14 h-14 rounded-full bg-wine text-white grid place-items-center shadow-xl hover:brightness-125 transition">
+    <span class="fab-ping absolute inset-0 rounded-full bg-wine opacity-60 animate-ping"></span>
+    <i data-lucide="message-circle" class="ic-open relative w-6 h-6"></i><i data-lucide="x" class="ic-close relative w-6 h-6"></i>
+  </button>
+</div>
+
+<!-- ===== ОКНО ЗАЯВКИ ===== -->
+<div id="leadModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="leadTitle">
+  <div class="glass bg-card rounded-3xl p-6 sm:p-8 w-full max-w-md relative">
+    <button id="leadClose" aria-label="Закрыть" class="absolute top-4 right-4 w-9 h-9 rounded-full grid place-items-center hover:text-winel"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <h3 id="leadTitle" class="font-display font-bold text-2xl">Обсудить проект</h3>
+    <p class="mt-1 text-sm text-white/60">Оставьте заявку, и мы свяжемся с вами.</p>
+    <form id="leadModalForm" class="mt-6 space-y-3">
+      <input required name="name" placeholder="Ваше имя" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none">
+      <input required name="contact" placeholder="Телефон, Telegram или WhatsApp" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none">
+      <textarea name="comment" rows="3" placeholder="Краткое описание задачи (необязательно)" class="w-full bg-ink border border-white/10 rounded-xl px-4 py-3.5 focus:border-winel outline-none resize-none"></textarea>
+      <button id="leadModalBtn" class="w-full bg-wine text-white font-semibold py-3.5 rounded-xl hover:brightness-125 transition disabled:opacity-60">Отправить заявку</button>
+      <div id="leadModalMsg" class="hidden"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== LIGHTBOX ===== -->
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-sm" role="dialog" aria-modal="true">
+  <div class="w-full max-w-5xl">
+    <div class="flex justify-end mb-3"><button id="closeBtn" aria-label="Закрыть" class="glass w-10 h-10 rounded-full grid place-items-center hover:text-winel"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+    <div id="player" class="aspect-video bg-black rounded-2xl overflow-hidden"></div>
+    <div class="mt-5"><h3 id="mTitle" class="font-display font-bold text-2xl"></h3><p id="mMeta" class="text-sm text-winel mt-1"></p><p id="mDesc" class="mt-3 text-white/70 max-w-3xl"></p></div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   !!! НАСТРОЙКИ ОТПРАВКИ ЗАЯВОК. ВСТАВЬТЕ СВОИ ДАННЫЕ ЗДЕСЬ !!!
+   Заявки уходят с сайта в фоне в ваш Google Apps Script (веб-приложение).
+   Скрипт записывает заявку в Google Таблицу и отправляет её вам в Telegram.
+   Токен Telegram-бота хранится В СКРИПТЕ, на странице его больше нет.
+   Веб-приложение должно быть развёрнуто с доступом «Все» (Anyone), иначе сайт получит ошибку.
+   ===================================================================== */
+// URL вашего веб-приложения Google Apps Script (заканчивается на /exec)
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRF2HALCHkf367cC0fHOPe8gzSkF5jFcwB3_q8yCs7rkVBfC5A8EsGq9cnK9qU1ByBfQ/exec';
+const WHATSAPP_NUMBER = '';   // для кнопки WhatsApp: 79991234567 (без + и пробелов); пусто = кнопка скрыта
+
+/* =====================================================================
+   ЦЕНЫ КАЛЬКУЛЯТОРА. МЕНЯЙТЕ ЦИФРЫ ЗДЕСЬ, сайт пересчитается сам.
+   price — цена в рублях; label — название на карточке.
+   ===================================================================== */
+const PRICES = {
+  currency: '₽',
+  discountPercent: 15,          // скидка новому клиенту, в процентах
+
+  // Шаг 1. Формат видео (выбор одного): базовая цена проекта
+  formats: {
+    reels: { label: 'Пакет Reels / Shorts (до 5 роликов)', price: 10000 },
+    event: { label: 'Репортаж / Ивент / Свадьба (Aftermovie)', price: 12000 },
+    promo: { label: 'Рекламный / Промо-ролик для бизнеса', price: 15000 },
+    clip:  { label: 'Музыкальный клип / Креативное видео', price: 18000 }
+  },
+  defaultFormat: 'promo',       // какой формат выбран при открытии
+
+  // Шаг 2. Длительность съёмки (выбор одного): доплата к базе
+  durations: {
+    standard: { label: 'Стандарт (до 3 часов, 1 локация)', price: 0 },       // входит в базу
+    half:     { label: 'Полусмена (до 5 часов, до 2 локаций)', price: 4000 },
+    full:     { label: 'Полная смена (до 8 часов)', price: 8000 }
+  },
+
+  // Шаг 3. Дополнения (можно несколько)
+  // free: true — бейдж «Бесплатно в базе»; checked: true — включено по умолчанию
+  addons: {
+    color:  { label: 'Кинематографичная цветокоррекция (S-Log3)', price: 0, free: true, checked: true },
+    script: { label: 'Помощь со сценарием и идеей', price: 3000 },
+    light:  { label: 'Постановочный кино-свет и чистый звук', price: 4000 },
+    vfx:    { label: 'Динамичные VFX-эффекты и саунд-дизайн', price: 5000 },
+    raw:    { label: 'Отдать все исходники в день съёмки', price: 3000 }
+  },
+
+  // Срочный монтаж: процент к общей сумме (до скидки)
+  rush: { label: 'Срочный монтаж за 48 часов', percent: 20 }
+};
+
+/* =====================================================================
+   ЗДЕСЬ ДОБАВЛЯТЬ СВОИ ВИДЕО В ПОРТФОЛИО
+   Каждый проект — один объект { ... } в массиве ниже. Скопируйте любой
+   блок, вставьте после него (не забудьте запятую) и поменяйте поля.
+   Сейчас в массиве ПРИМЕРЫ-ЗАГЛУШКИ: замените их своими работами.
+
+   Поля:
+   title    — название проекта
+   client   — клиент
+   category — ТОЛЬКО одна из: "Реклама", "Reels/Shorts", "Музыкальные клипы", "Ивенты"
+   duration — длительность, например "1:30"
+   image    — ссылка на картинку-превью (формат 16:9, например 1280x720)
+   autoThumb — true: для Vimeo сайт сам подгрузит обложку видео (а image останется запасной)
+   video    — ссылка на видео:
+        YouTube → в формате embed:  https://www.youtube.com/embed/ID_ВИДЕО
+                  (ID — это часть после v= в обычной ссылке)
+        Vimeo   → просто вставьте обычную ссылку https://vimeo.com/ID (сайт сам превратит её в код для встраивания).
+                  Для скрытых видео ссылка вида https://vimeo.com/ID/КОД или https://vimeo.com/ID?h=КОД — код подставится автоматически.
+        Файл    → прямая ссылка на .mp4, например https://ваш-сайт.ru/video/clip.mp4
+   description — краткое описание задачи
+   ===================================================================== */
+const portfolioProjects = [
+  { title: "Отчётный ролик с мероприятия", client: "", category: "Ивенты", duration: "3:10",
+    image: "https://i.vimeocdn.com/video/2212111662-f79d9c5b7aae61ebcd4ce28ac2527a723b2caf2ba802222033e9ee53a04b3b1e-d?f=webp&region=us",
+    video: "https://vimeo.com/1235779855?h=b266348d66",   // скрытое видео: код после h= обязателен
+    autoThumb: true,
+    description: "Динамичный ролик, съёмка в 4K." },
+  { title: "Промо танцы", client: "", category: "Реклама", duration: "0:27",
+    image: "https://i.vimeocdn.com/video/2213843691-5f4c8f0be76b40764c70eba8bd8a47de9a42500d7d9cc8cf5ad70e338e224fcf-d?f=webp&region=us",
+    video: "https://vimeo.com/1237159937?h=b4dd5b512b",   // скрытое видео: код после h= обязателен
+    autoThumb: true,
+    description: "Реклама площадки на фестивале." },
+  { title: "Промо АРТ", client: "", category: "Реклама", duration: "0:23",
+    image: "https://i.vimeocdn.com/video/2213843827-e204b066219208e2f1516208643b2a0d4e0d6f8b38e77226193c4a778eacc331-d?f=webp&region=us",
+    video: "https://vimeo.com/1237159796?h=1f5fce25d5",   // скрытое видео: код после h= обязателен
+    autoThumb: true,
+    description: "Реклама площадки на фестивале." }
+];
+
+const $ = s => document.querySelector(s);
+const modal = $('#modal'), player = $('#player'), strip = $('#grid');
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// Автодвижение ленты: скорость в пикселях в секунду (0 — лента не едет сама, только листается).
+// autoDirection: 1 — слева направо, -1 — справа налево.
+const autoSpeed = 40, autoDirection = 1;
+
+function cardHTML(p, hidden) {
+  return `
+    <button ${hidden ? 'tabindex="-1" aria-hidden="true"' : ''} class="thumb group text-left rounded-2xl overflow-hidden bg-card block shrink-0 w-[80vw] sm:w-[400px] mr-6" data-i="${p.i}">
+      <div class="relative aspect-video overflow-hidden">
+        <img src="${esc(p.image)}" alt="${esc(p.title)}" loading="lazy" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+        <span class="play absolute inset-0 m-auto w-16 h-16 rounded-full bg-wine text-white grid place-items-center"><i data-lucide="play" class="w-6 h-6"></i></span>
+        <span class="absolute bottom-3 right-3 glass text-xs px-2 py-1 rounded-md">${esc(p.duration)}</span>
+      </div>
+      <div class="p-5"><h3 class="font-display font-bold text-xl">${esc(p.title)}</h3><p class="text-sm text-white/50 mt-1">${esc([p.client, p.category].filter(Boolean).join(' · '))}</p></div>
+    </button>`;
+}
+
+function renderGrid(cat = 'Все') {
+  const list = portfolioProjects.map((p, i) => ({ ...p, i })).filter(p => cat === 'Все' || p.category === cat);
+  if (!list.length) { $('#grid').innerHTML = '<p class="text-white/50">В этой категории пока нет проектов.</p>'; return; }
+  // Повторяем список, чтобы лента была достаточно длинной, затем дублируем её для бесшовной петли
+  let base = []; while (base.length < 4) base = base.concat(list);
+  $('#grid').innerHTML = `<div class="track">${base.map(p => cardHTML(p, false)).join('')}${base.map(p => cardHTML(p, true)).join('')}</div>`;
+  lucide.createIcons();
+  strip.scrollLeft = halfWidth();   // стартуем с середины, чтобы можно было листать в обе стороны
+}
+
+function renderFilters() {
+  const cats = ['Все', 'Реклама', 'Reels/Shorts', 'Музыкальные клипы', 'Ивенты'];
+  $('#filters').innerHTML = cats.map((c, k) =>
+    `<button class="filter-btn border border-white/15 rounded-full px-5 py-2 text-sm hover:border-winel transition ${k === 0 ? 'active' : ''}">${c}</button>`).join('');
+  $('#filters').addEventListener('click', e => {
+    const b = e.target.closest('.filter-btn'); if (!b) return;
+    document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); renderGrid(b.textContent);
+  });
+}
+
+// Разбор любой ссылки Vimeo: vimeo.com/ID, vimeo.com/ID/КОД, vimeo.com/ID?h=КОД, player.vimeo.com/video/ID?h=КОД
+function vimeoParts(url) {
+  const m = String(url).match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([0-9a-f]+))?/i);
+  if (!m) return null;
+  const q = String(url).match(/[?&]h=([0-9a-f]+)/i);
+  return { id: m[1], hash: m[2] || (q && q[1]) || '' };
+}
+// Ссылка для встраивания: https://player.vimeo.com/video/ID?h=КОД&autoplay=1&title=0&byline=0&portrait=0
+function vimeoEmbed(url) {
+  const v = vimeoParts(url); if (!v) return null;
+  return `https://player.vimeo.com/video/${v.id}?${v.hash ? 'h=' + v.hash + '&' : ''}autoplay=1&title=0&byline=0&portrait=0`;
+}
+
+function openModal({ video, title = '', client = '', category = '', description = '' }) {
+  const vm = vimeoEmbed(video);
+  const isEmbed = vm || /youtube\.com|youtu\.be/.test(video);
+  const src = vm || (video + (video.includes('?') ? '&' : '?') + 'autoplay=1');
+  player.innerHTML = isEmbed
+    ? `<iframe class="w-full h-full" src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`
+    : `<video class="w-full h-full" src="${esc(video)}" controls autoplay playsinline></video>`;
+  $('#mTitle').textContent = title;
+  $('#mMeta').textContent = [client, category].filter(Boolean).join(' · ');
+  $('#mDesc').textContent = description;
+  modal.classList.remove('hidden'); modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  player.innerHTML = '';   // убираем плеер — видео останавливается
+  modal.classList.add('hidden'); modal.classList.remove('flex');
+  document.body.style.overflow = '';
+}
+
+$('#grid').addEventListener('click', e => {
+  const c = e.target.closest('.thumb'); if (c) openModal(portfolioProjects[c.dataset.i]);
+});
+$('#closeBtn').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== Лента портфолио: колесо мыши, пауза при наведении, бесшовная петля =====
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let pos = 0, prevT = 0, paused = false, touchTimer;
+function halfWidth() { const t = strip.firstElementChild; return t && t.classList.contains('track') ? t.scrollWidth / 2 : 0; }
+
+// Колесо мыши над лентой листает её по горизонтали
+strip.addEventListener('wheel', e => {
+  if (!halfWidth()) return;
+  e.preventDefault();
+  strip.scrollLeft += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+}, { passive: false });
+strip.addEventListener('mouseenter', () => paused = true);
+strip.addEventListener('mouseleave', () => paused = false);
+strip.addEventListener('touchstart', () => { paused = true; clearTimeout(touchTimer); }, { passive: true });
+strip.addEventListener('touchend', () => { touchTimer = setTimeout(() => paused = false, 2000); }, { passive: true });
+// Бесшовная петля: когда доехали до края, перескакиваем на такую же позицию в соседней копии
+strip.addEventListener('scroll', () => {
+  const h = halfWidth(); if (!h) return;
+  if (strip.scrollLeft <= 0) strip.scrollLeft += h;
+  else if (strip.scrollLeft > h) strip.scrollLeft -= h;
+});
+function tick(t) {
+  const dt = Math.min((t - prevT) / 1000, .1); prevT = t;
+  const h = halfWidth();
+  if (h && !paused && !reduceMotion && autoSpeed) {
+    if (Math.abs(strip.scrollLeft - pos) > 1.5) pos = strip.scrollLeft;   // подхватываем ручную прокрутку
+    pos -= autoDirection * autoSpeed * dt;
+    while (pos <= 0) pos += h;
+    while (pos > h) pos -= h;
+    strip.scrollLeft = pos;
+  } else pos = strip.scrollLeft;
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+// Счётчики в блоке статистики
+const io = new IntersectionObserver(es => es.forEach(en => {
+  if (!en.isIntersecting) return; io.unobserve(en.target);
+  const end = +en.target.dataset.count; let t0;
+  const step = t => { t0 ??= t; const p = Math.min((t - t0) / 1400, 1); en.target.textContent = Math.round(end * p); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}), { threshold: .6 });
+document.querySelectorAll('[data-count]').forEach(el => io.observe(el));
+
+
+// ===== WhatsApp в плавающей кнопке (если указан номер) =====
+if (WHATSAPP_NUMBER) { const w = $('#waLink'); w.href = `https://wa.me/${WHATSAPP_NUMBER}`; w.hidden = false; }
+
+// ===== Отправка заявки в Telegram (в фоне, без перехода на другие сайты) =====
+const h = v => String(v ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));   // защита HTML-разметки
+
+// ===== Учёт клиентов: номер заявки, нормализация контакта, повторные заявки =====
+// Сайт без сервера НЕ МОЖЕТ проверить, покупал ли человек раньше. Он помогает вам так:
+//  1) присваивает заявке номер; 2) приводит контакт к единому виду для поиска в вашей базе;
+//  3) помечает повторные заявки с того же браузера; 4) пишет в сообщении, заявлена ли скидка.
+// Окончательное решение о скидке вы принимаете, сверив контакт со своей базой клиентов.
+function normalizeContact(raw) {
+  const c = String(raw || '').trim();
+  if (/@.+\..+/.test(c) && !c.startsWith('@')) return c.toLowerCase();                 // email
+  const digits = c.replace(/\D/g, '');
+  if (digits.length >= 10 && !/[a-zа-я]/i.test(c.replace(/^\+?[\d\s()-]+$/, ''))) {  // телефон
+    let d = digits; if (d.length === 11 && d[0] === '8') d = '7' + d.slice(1); if (d.length === 10) d = '7' + d;
+    return d;
+  }
+  const tg = c.replace(/^https?:\/\/t\.me\//i, '').replace(/^@/, '').toLowerCase();    // Telegram
+  return tg ? '@' + tg : c;
+}
+const HISTORY_KEY = 'fl_leads';
+function loadHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch (e) { return []; } }
+function saveHistory(list) { try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(-20))); } catch (e) {} }
+const newLeadId = () => (Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 4)).toUpperCase();
+
+// formData: { name, contact, services: ['..'], budget: '..', comment: '..', discountClaimed: true/false, source: '..' }
+// Отправляет заявку в Google Apps Script. Заголовок Content-Type НЕ задаём: так запрос «простой»,
+// и браузер не делает предварительный запрос, который Apps Script не поддерживает.
+async function sendToTelegram(formData) {
+  if (!GOOGLE_SCRIPT_URL) throw new Error('Не указан GOOGLE_SCRIPT_URL');
+  const leadId = newLeadId(), norm = normalizeContact(formData.contact), history = loadHistory();
+  const prev = history.length ? history[history.length - 1] : null;
+  const payload = {
+    leadId,                                               // номер заявки
+    date: new Date().toLocaleString('ru-RU'),             // дата и время
+    name: formData.name,                                  // имя
+    contact: formData.contact,                            // контакт как ввёл клиент
+    contactNormalized: norm,                              // контакт в едином виде для поиска в базе
+    services: (formData.services || []).join('; '),       // выбранные пункты калькулятора
+    budget: formData.budget || '',                        // предварительный бюджет
+    comment: formData.comment || '',                      // комментарий
+    discountClaimed: formData.discountClaimed === undefined ? '' : (formData.discountClaimed ? 'да' : 'нет'),
+    repeatFromBrowser: prev ? `да (прошлая №${prev.id}, ${new Date(prev.ts).toLocaleDateString('ru-RU')})` : 'нет',
+    source: formData.source || ''                         // откуда заявка
+  };
+  const response = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+  const raw = await response.text();
+  let result; try { result = JSON.parse(raw); } catch (e) { throw new Error('Скрипт вернул не JSON (HTTP ' + response.status + '): ' + raw.slice(0, 200)); }
+  if (result.status !== 'success') throw new Error(result.message || 'Ошибка скрипта');
+  history.push({ id: leadId, ts: Date.now(), contact: norm }); saveHistory(history);
+  return { leadId };
+}
+
+// Кнопка: «Отправка...» с индикатором, затем возвращаем исходный текст. Возвращает true/false
+async function runSend(btn, payload) {
+  const label = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>Отправка...';
+  try { return (await sendToTelegram(payload)).leadId; }
+  catch (err) {
+    console.error('Не удалось отправить заявку:', err);
+    console.error('ПОДСКАЗКА: проверьте GOOGLE_SCRIPT_URL и что веб-приложение развёрнуто с доступом «Все» (Anyone).');
+    return false;
+  }
+  finally { btn.disabled = false; btn.innerHTML = label; }
+}
+// Сообщение под формой: зелёная галочка при успехе, красное при ошибке
+function showResult(el, res) {
+  const ok = !!res, id = typeof res === 'string' ? res : '';
+  el.className = 'flex items-start gap-3 rounded-2xl border p-4 text-sm ' + (ok ? 'border-green-500/30 bg-green-500/10 text-green-300' : 'border-red-500/30 bg-red-500/10 text-red-300');
+  el.innerHTML = ok
+    ? '<svg class="w-6 h-6 shrink-0 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg><p>Заявка успешно отправлена! Мы изучим детали и свяжемся с вами в ближайшее время.' + (id ? '<br><span class="opacity-70">Номер заявки: ' + id + '</span>' : '') + '</p>'
+    : '<p>Не удалось отправить заявку. Попробуйте ещё раз или напишите на Ra4aell@gmail.com</p>';
+}
+
+// ----- Окно «Обсудить проект» -----
+const leadModal = $('#leadModal');
+function openLead() { $('#leadModalMsg').className = 'hidden'; leadModal.classList.remove('hidden'); leadModal.classList.add('flex'); document.body.style.overflow = 'hidden'; $('#leadModalForm [name=name]').focus(); }
+function closeLead() { leadModal.classList.add('hidden'); leadModal.classList.remove('flex'); document.body.style.overflow = ''; }
+document.addEventListener('click', e => { if (e.target.closest('[data-lead]')) { fab.classList.remove('open'); openLead(); } });
+$('#leadClose').addEventListener('click', closeLead);
+leadModal.addEventListener('click', e => { if (e.target === leadModal) closeLead(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLead(); });
+$('#leadModalForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  const ok = await runSend($('#leadModalBtn'), { name: f.get('name'), contact: f.get('contact'), comment: f.get('comment'), source: 'Окно «Обсудить проект»' });
+  showResult($('#leadModalMsg'), ok); if (ok) e.target.reset();
+});
+
+// ----- Форма в подвале -----
+$('#leadForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = new FormData(e.target);
+  const ok = await runSend(e.target.querySelector('button'), { name: f.get('name'), contact: f.get('contact'), comment: 'Тип проекта: ' + f.get('type') + ' (форма в подвале)', source: 'Форма в подвале' });
+  showResult($('#formMsg'), ok); if (ok) e.target.reset();
+});
+
+// ===== Калькулятор стоимости =====
+const fmt = n => n.toLocaleString('ru-RU') + ' ' + PRICES.currency;
+const calc = { format: PRICES.defaultFormat, duration: Object.keys(PRICES.durations)[0], addons: new Set(Object.keys(PRICES.addons).filter(k => PRICES.addons[k].checked)), rush: false };
+const rushKey = '__rush';
+
+function optCard(type, name, key, label, priceText, checked, badge = '') {
+  return `<label class="block cursor-pointer"><input type="${type}" name="${name}" value="${key}" class="peer sr-only" ${checked ? 'checked' : ''}>
+    <div class="h-full rounded-2xl border border-white/10 bg-card p-5 flex items-start justify-between gap-4 transition hover:border-white/30 peer-checked:border-winel peer-checked:bg-wine/25 peer-checked:shadow-[0_0_30px_rgba(224,86,111,0.25)] peer-focus-visible:ring-2 peer-focus-visible:ring-winel">
+      <span class="font-medium">${label}${badge ? `<span class="ml-2 text-xs bg-wine text-white px-2 py-0.5 rounded-full align-middle whitespace-nowrap">${badge}</span>` : ''}</span>
+      <span class="text-winel font-semibold whitespace-nowrap">${priceText}</span></div></label>`;
+}
+const plus = p => p ? '+' + fmt(p) : '+0 ' + PRICES.currency;
+$('#optFormats').innerHTML = Object.entries(PRICES.formats).map(([k, v]) => optCard('radio', 'format', k, v.label, fmt(v.price), k === calc.format)).join('');
+$('#optDurations').innerHTML = Object.entries(PRICES.durations).map(([k, v]) => optCard('radio', 'duration', k, v.label, v.price ? plus(v.price) : 'Входит в базу', k === calc.duration)).join('');
+$('#optAddons').innerHTML = Object.entries(PRICES.addons).map(([k, v]) => optCard('checkbox', 'addon', k, v.label, v.free ? '+0 ' + PRICES.currency : plus(v.price), calc.addons.has(k), v.free ? 'Бесплатно в базе' : '')).join('')
+  + optCard('checkbox', 'addon', rushKey, PRICES.rush.label, '+' + PRICES.rush.percent + '% к сумме', false);
+
+function calcTotals() {
+  const f = PRICES.formats[calc.format], d = PRICES.durations[calc.duration];
+  const items = [{ label: f.label, price: f.price }, { label: d.label, price: d.price }];
+  calc.addons.forEach(k => items.push({ label: PRICES.addons[k].label, price: PRICES.addons[k].price }));
+  let sub = items.reduce((a, i) => a + i.price, 0);
+  if (calc.rush) { const extra = Math.round(sub * PRICES.rush.percent / 100); items.push({ label: PRICES.rush.label + ` (+${PRICES.rush.percent}%)`, price: extra }); sub += extra; }
+  const disc = $('#newClient').checked;
+  return { items, sub, disc, total: disc ? Math.round(sub * (1 - PRICES.discountPercent / 100)) : sub };
+}
+function budgetText(t) { return t.disc ? `от ${fmt(t.total)} вместо ${fmt(t.sub)} (скидка ${PRICES.discountPercent}% новому клиенту)` : `от ${fmt(t.sub)}`; }
+
+function renderCalc() {
+  const t = calcTotals();
+  $('#sumList').innerHTML = t.items.map(i => `<li class="flex justify-between gap-3"><span class="text-white/70">${h(i.label)}</span><span class="whitespace-nowrap">${i.price ? '+' + fmt(i.price) : 'в базе'}</span></li>`).join('');
+  $('#discLabel').textContent = `Я новый клиент (скидка ${PRICES.discountPercent}% на первый проект)`;
+  $('#sumPrice').innerHTML = t.disc
+    ? `<div class="font-display font-extrabold text-4xl text-winel">от ${fmt(t.total)}</div><div class="mt-1 text-sm text-white/50">вместо <s>${fmt(t.sub)}</s> <span class="ml-1 bg-wine text-white text-xs px-2 py-0.5 rounded-full">−${PRICES.discountPercent}%</span></div><p class="mt-2 text-xs text-white/50">Скидка действует на первый проект и подтверждается при обсуждении.</p>`
+    : `<div class="font-display font-extrabold text-4xl">от ${fmt(t.sub)}</div>`;
+  $('#calcBtn').textContent = t.disc ? 'Зафиксировать скидку и обсудить проект в Telegram' : 'Обсудить проект в Telegram';
+}
+$('#calcOptions').addEventListener('change', e => {
+  const i = e.target;
+  if (i.name === 'format') calc.format = i.value;
+  else if (i.name === 'duration') calc.duration = i.value;
+  else if (i.name === 'addon') { if (i.value === rushKey) calc.rush = i.checked; else i.checked ? calc.addons.add(i.value) : calc.addons.delete(i.value); }
+  renderCalc();
+});
+$('#newClient').addEventListener('change', renderCalc);
+$('#calcForm').addEventListener('submit', async e => {
+  e.preventDefault(); const f = new FormData(e.target); const t = calcTotals();
+  const ok = await runSend($('#calcBtn'), { name: f.get('name'), contact: f.get('contact'), services: t.items.map(i => `${i.label}: ${i.price ? '+' + fmt(i.price) : 'в базе'}`), budget: budgetText(t), discountClaimed: t.disc, source: 'Калькулятор' });
+  showResult($('#calcMsg'), ok); if (ok) e.target.reset();
+});
+renderCalc();
+
+// ===== До / После =====
+const cmp = $('#cmp'); let cmpDrag = false;
+function cmpSet(x) { const r = cmp.getBoundingClientRect(); const p = Math.max(0, Math.min(100, (x - r.left) / r.width * 100)); cmp.style.setProperty('--p', p + '%'); cmp.setAttribute('aria-valuenow', Math.round(p)); }
+cmp.addEventListener('pointerdown', e => { cmpDrag = true; cmp.setPointerCapture(e.pointerId); cmpSet(e.clientX); });
+cmp.addEventListener('pointermove', e => { if (cmpDrag) cmpSet(e.clientX); });
+['pointerup', 'pointercancel'].forEach(t => cmp.addEventListener(t, () => cmpDrag = false));
+cmp.addEventListener('keydown', e => {
+  const d = e.key === 'ArrowLeft' ? -5 : e.key === 'ArrowRight' ? 5 : 0; if (!d) return;
+  e.preventDefault(); const r = cmp.getBoundingClientRect(); cmpSet(r.left + r.width * (parseFloat(cmp.getAttribute('aria-valuenow')) + d) / 100);
+});
+
+// ===== FAQ (аккордеон) =====
+// ТЕКСТЫ ВОПРОСОВ И ОТВЕТОВ МЕНЯЙТЕ ЗДЕСЬ
+const faq = [
+  ['Сколько стоит ролик?', 'Цены по запросу: стоимость зависит от формата, объёма съёмки и сроков. Пройдите калькулятор выше или напишите нам, и мы быстро сориентируем по бюджету.'],
+  ['Как быстро вы делаете проект?', 'Reels и короткие ролики можно сделать за несколько дней, реклама и клипы занимают дольше. Точные сроки фиксируем после брифа и сдаём проект точно в дедлайн.'],
+  ['С чего начать работу?', 'С короткого брифа: задача, аудитория, сроки и примеры роликов, которые нравятся. Достаточно написать нам в Telegram, остальное уточним в разговоре.'],
+  ['Где вы снимаете?', 'Работаем в Москве и МО. Съёмки в других городах обсуждаем индивидуально.'],
+  ['Можно ли вносить правки?', 'Да. Показываем черновой монтаж до финала и обсуждаем правки по ходу работы, чтобы результат совпал с вашей задачей.']
+];
+$('#faqList').innerHTML = faq.map(([q, a]) => `
+  <div class="faq-item border-b border-white/10">
+    <button class="faq-q w-full flex justify-between items-center gap-4 py-5 text-left font-display font-bold text-lg" aria-expanded="false">${q}<i data-lucide="plus" class="faq-ic w-5 h-5 text-winel shrink-0 transition-transform duration-300"></i></button>
+    <div class="faq-a"><div class="overflow-hidden"><p class="pb-5 text-white/60">${a}</p></div></div>
+  </div>`).join('');
+$('#faqList').addEventListener('click', e => {
+  const b = e.target.closest('.faq-q'); if (!b) return;
+  const item = b.parentElement, open = !item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(x => { x.classList.remove('open'); x.firstElementChild.setAttribute('aria-expanded', 'false'); });
+  if (open) { item.classList.add('open'); b.setAttribute('aria-expanded', 'true'); }
+});
+
+// ===== Плавающая кнопка связи =====
+const fab = $('#fab');
+$('#fabBtn').addEventListener('click', () => { const o = fab.classList.toggle('open'); $('#fabBtn').setAttribute('aria-expanded', o); });
+document.addEventListener('click', e => { if (!fab.contains(e.target)) { fab.classList.remove('open'); $('#fabBtn').setAttribute('aria-expanded', 'false'); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fab.classList.remove('open'); });
+
+
+// Автообложки Vimeo: если autoThumb: true, берём картинку видео через oEmbed. При ошибке остаётся запасная обложка из image
+async function loadVimeoThumbs() {
+  let changed = false;
+  await Promise.all(portfolioProjects.map(async p => {
+    const v = p.autoThumb && vimeoParts(p.video); if (!v) return;
+    try {
+      const u = `https://vimeo.com/${v.id}${v.hash ? '/' + v.hash : ''}`;
+      const r = await fetch(`https://vimeo.com/api/oembed.json?width=1280&url=${encodeURIComponent(u)}`);
+      if (!r.ok) return;
+      const j = await r.json();
+      if (j.thumbnail_url) { p.image = j.thumbnail_url; changed = true; }
+    } catch (e) { /* оставляем запасную обложку */ }
+  }));
+  if (changed) { const a = document.querySelector('.filter-btn.active'); renderGrid(a ? a.textContent : 'Все'); }
+}
+
+renderFilters(); renderGrid(); lucide.createIcons(); loadVimeoThumbs();
+</script>
+</body>
+</html>
